@@ -1,0 +1,19 @@
+{
+  "name": "doc467",
+  "version": "0.0.1",
+  "description": "A simple documentation generation script",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "coffee-script": "",
+    "underscore": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://gist.github.com/4676239.git"
+  },
+  "author": "Sean Ouimet",
+  "license": "BSD"
+}

@@ -202,7 +202,7 @@ class Doc
       <html>
       <head>
         <meta charset="utf-8" />
-        <title>Community API</title>
+        <title>My API</title>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />
         <style> .page-header { padding-top: 60px; } </style>
       </head>
@@ -211,7 +211,7 @@ class Doc
           <div class="navbar-inner">
             <div class="container">
               <span class="brand">
-                Community API
+                My API
               </span>
               <ul class="nav">
                 <% _.each(namespace_names, function(ns){ %>
