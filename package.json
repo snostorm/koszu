@@ -1,6 +1,6 @@
 {
   "name": "doc467",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple documentation generation script",
   "main": "index.js",
   "scripts": {

@@ -45,7 +45,11 @@ widgets = doc.namespace "Widgets API",
     example: '10'
     type: 'Number'
     description: 'To specify the number of documents in a page.'
-    
+
+(widgets.route 'POST', '', 'Adds a new widget')
+  .input
+    name: 'JSON'
+    type: 'WidgetObject'
 
 output = doc.toHTML()
 

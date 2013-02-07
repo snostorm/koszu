@@ -6,14 +6,22 @@ Helper Library (new module?):
 
 _ = require 'underscore'
 
+convert_hash = (type) ->
+  unless type?.toLowerCase() in ['string', 'array', 'number', 'integer', 'boolean']
+    return ('obj' + type).replace(' ', '_').replace('/', '-')
+
 class Route
   constructor: (@method, @path, @description) ->
     @_parameters = []
     @_responses = []
+    @_inputs = []
     @
   parameter: (data) ->
     @_parameters.push data
     return @
+  input: (data) ->
+    _.defaults data, {type: 'String', description: ''}
+    @_inputs.push data
   response: (data) ->
     @_responses.push data
     return @
@@ -24,6 +32,10 @@ class Route
       description: @description
     output.parameters = @_parameters unless _.isEmpty @_parameters
     output.responses = @_responses unless _.isEmpty @_responses
+    unless _.isEmpty @_inputs
+      @_inputs.forEach (input) ->
+        input.typeHash = (convert_hash input.type) if input.type?
+      output.inputs = @_inputs 
     return output
 
 class DocObject
@@ -40,8 +52,7 @@ class DocObject
       description: @description
     unless _.isEmpty @_fields
       @_fields.forEach (field) =>
-        unless field.type?.toLowerCase() in ['string', 'array', 'number', 'integer', 'boolean']
-          field.typeHash = ('obj' + field.type).replace(' ', '_').replace('/', '-')
+        field.typeHash = (convert_hash field.type) if field.type?
       output.fields = @_fields 
     return output
 
@@ -75,6 +86,11 @@ class Namespace
         route.hash = (route.method + @base + route.path).replace(' ', '_').replace('/', '-')
         return route
   toHTML: ->
+    typeLink = (obj) ->
+      if obj.typeHash
+        return "<a href=\"##{obj.typeHash}\">#{obj.type}</a>"
+      else
+        return obj.type
     template = """
     <div class="page-header" id="<%= base.replace('/','') %>">
       <h1><%= name %> <small><%= base %></small></h1>
@@ -117,7 +133,7 @@ class Namespace
           <tr>
             <td><%= field.name %> <% if (field.readonly == true) { %><span class="label label-info">readonly</span><% } %></td>
             <td><%= field.description %> <% if (field.example) { %><code><%= field.example %></code><% } %></td>
-            <td><% if (field.typeHash) { %><a href="#<%= field.typeHash %>"><%= field.type %></a><% } else { %><%= field.type %><% } %></td>
+            <td><%= typeLink(field) %></td>
           </tr>
         <% }); %>
         </tbody>
@@ -140,6 +156,21 @@ class Namespace
               <% if (param.default) { %>Default: <span class='label label-info'><%= param.default %></span><br/><% } %>
               <% if (param.warning) { %><span class='label label-info'><strong>warning:</strong> <%= param.warning %></span><br/><% } %>
               <%= param.description %>
+            </dd>
+          <% }); %>
+          </dl>
+        </div>
+      <% } %>
+      <% if (route.inputs != null) { %>
+        <h3 class="muted">Inputs</h3>
+        <div>
+          <dl class="dl-horizontal">
+          <% _.each(route.inputs, function(input) { %>
+            <dt>
+              <strong><%= input.name %></strong>
+            </dt>
+            <dd>
+              <%= typeLink(input) %>
             </dd>
           <% }); %>
           </dl>
@@ -171,8 +202,8 @@ class Namespace
     json_namespace = @toJSON()
     routes = json_namespace.routes
     toc_html = (_.template(toc_template, {route: r}) for r in routes).join '\n'
-    docObjects_html = (_.template(docObject_template, {docObject: docObject}) for docObject in json_namespace.docObjects).join '\n'
-    routes_html = (_.template(route_template, {route: r}) for r in routes).join '\n'
+    docObjects_html = (_.template(docObject_template, {docObject: docObject, typeLink: typeLink}) for docObject in json_namespace.docObjects).join '\n'
+    routes_html = (_.template(route_template, {route: r, typeLink: typeLink}) for r in routes).join '\n'
     p_introduction = if (introduction = json_namespace.introduction)?
       '<div class=""><p class="lead">' + introduction.replace(/\n([ \t]*\n)+/g, '</p><p>').replace('\n', '<br />') + '</p></div>' 
     else
