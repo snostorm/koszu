@@ -6,9 +6,11 @@ Helper Library (new module?):
 
 _ = require 'underscore'
 
-convert_hash = (type) ->
-  unless type?.toLowerCase() in ['string', 'array', 'number', 'integer', 'boolean']
-    return ('obj' + type).replace(' ', '_').replace('/', '-')
+convert_hash = (field) ->
+  type = field.type
+  unless type?.toLowerCase() in ['string', 'number', 'integer', 'boolean']
+    t = field.array || type
+    return ('obj' + t).replace(' ', '_').replace('/', '-')
 
 class Route
   constructor: (@method, @path, @description) ->
@@ -34,8 +36,8 @@ class Route
     output.responses = @_responses unless _.isEmpty @_responses
     unless _.isEmpty @_inputs
       @_inputs.forEach (input) ->
-        input.typeHash = (convert_hash input.type) if input.type?
-      output.inputs = @_inputs 
+        input.typeHash = (convert_hash input) if input.type?
+      output.inputs = @_inputs
     return output
 
 class DocObject
@@ -52,8 +54,8 @@ class DocObject
       description: @description
     unless _.isEmpty @_fields
       @_fields.forEach (field) =>
-        field.typeHash = (convert_hash field.type) if field.type?
-      output.fields = @_fields 
+        field.typeHash = (convert_hash field) if field.type?
+      output.fields = @_fields
     return output
 
 class Namespace
@@ -205,7 +207,7 @@ class Namespace
     docObjects_html = (_.template(docObject_template, {docObject: docObject, typeLink: typeLink}) for docObject in json_namespace.docObjects).join '\n'
     routes_html = (_.template(route_template, {route: r, typeLink: typeLink}) for r in routes).join '\n'
     p_introduction = if (introduction = json_namespace.introduction)?
-      '<div class=""><p class="lead">' + introduction.replace(/\n([ \t]*\n)+/g, '</p><p>').replace('\n', '<br />') + '</p></div>' 
+      '<div class=""><p class="lead">' + introduction.replace(/\n([ \t]*\n)+/g, '</p><p>').replace('\n', '<br />') + '</p></div>'
     else
       ''
     render _.extend {routes_html: routes_html, docObjects_html: docObjects_html, p_introduction: p_introduction, toc: toc_html}, json_namespace
