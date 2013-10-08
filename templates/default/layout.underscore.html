@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>My API</title>
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />
+  <style> .page-header { padding-top: 60px; } </style>
+</head>
+<body data-spy="scroll">
+  <div class="navbar navbar-fixed-top" id="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <span class="brand">
+          My API
+        </span>
+        <ul class="nav">
+          <% _.each(namespace_names, function(ns){ %>
+          <li><a href="#<%= ns.id %>"><%= ns.name %></a></li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <%= namespaces %>
+  </div>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+  <script> $('#navbar').scrollspy(); </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<h2 id="<%= route.hash %>"><%= route.description %></h2>
+<div class="well well-small">
+  <strong class="text-info"><%= route.method %> <%= route.path %></strong>
+</div>
+<% if (route.parameters != null) { %>
+  <h3 class="muted">Parameters</h3>
+  <div>
+    <dl class="dl-horizontal">
+    <% _.each(route.parameters, function(param) { %>
+      <dt>
+        <strong><%= param.name %></strong>
+      </dt>
+      <dd><% if (param.example) { %><code><%= param.example %></code><br/><% } %>
+        <% if (param.default) { %>Default: <span class='label label-info'><%= param.default %></span><br/><% } %>
+        <% if (param.warning) { %><span class='label label-info'><strong>warning:</strong> <%= param.warning %></span><br/><% } %>
+        <%= param.description %>
+      </dd>
+    <% }); %>
+    </dl>
+  </div>
+<% } %>
+<% if (route.inputs != null) { %>
+  <h3 class="muted">Inputs</h3>
+  <div>
+    <dl class="dl-horizontal">
+    <% _.each(route.inputs, function(input) { %>
+      <dt>
+        <strong><%= input.name %></strong>
+      </dt>
+      <dd>
+        <%= typeLink(input) %>
+      </dd>
+    <% }); %>
+    </dl>
+  </div>
+<% } %>
+<% if (route.responses != null) { %>
+  <h3 class="muted">Responses</h3>
+  <div>
+    <dl class="dl-horizontal">
+    <% _.each(route.responses, function(resp) { %>
+      <dt>
+        <strong><%= resp.status %></strong>
+      </dt>
+      <dd>
+        <%= resp.description %>
+        <% if (resp.examples != null) { _.each(resp.examples, function(example){ %>
+          <p>
+          <code class="text-info"><%= example.request %></code>
+          <pre class="pre-scrollable"><%= JSON.stringify(example.response, null, 2) %></pre>
+          </p>
+        <% }) } %>
+      </dd>
+    <% }); %>
+    </dl>
+  </div>
+<% } %>
